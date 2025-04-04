@@ -49,6 +49,9 @@ extra:
       link: https://goperf.dev/feed_rss_created.xml
     - icon: fontawesome/brands/github
       link: https://github.com/astavonin/go-optimization-guide
+  analytics:
+    provider: google
+    property: G-9G75PKHPKN
 
 nav:
   - Home: index.md
