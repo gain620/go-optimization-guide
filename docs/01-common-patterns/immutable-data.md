@@ -32,13 +32,13 @@ type Config struct {
 Maps and slices in Go are reference types. Even if the Config struct isn't changed, someone could accidentally mutate a shared map. To prevent this, we make defensive copies:
 
 ```go
-func NewConfig(logLevel string, timeout time.Duration, features map[string]bool) Config {
+func NewConfig(logLevel string, timeout time.Duration, features map[string]bool) *Config {
     copiedFeatures := make(map[string]bool, len(features))
     for k, v := range features {
         copiedFeatures[k] = v
     }
 
-    return Config{
+    return &Config{
         LogLevel: logLevel,
         Timeout:  timeout,
         Features: copiedFeatures,
@@ -52,15 +52,15 @@ Now, every config instance is self-contained and safe to share.
 Use `atomic.Value` to store and safely update the current config.
 
 ```go
-var currentConfig atomic.Value
+var currentConfig atomic.Pointer[Config]
 
 func LoadInitialConfig() {
     cfg := NewConfig("info", 5*time.Second, map[string]bool{"beta": true})
     currentConfig.Store(cfg)
 }
 
-func GetConfig() Config {
-    return currentConfig.Load().(Config)
+func GetConfig() *Config {
+    return currentConfig.Load()
 }
 ```
 
@@ -97,16 +97,16 @@ type RoutingTable struct {
 To ensure immutability, we deep-copy the slice of routes when constructing a new routing table.
 
 ```go
-func NewRoutingTable(routes []Route) RoutingTable {
+func NewRoutingTable(routes []Route) *RoutingTable {
     copied := make([]Route, len(routes))
     copy(copied, routes)
-    return RoutingTable{Routes: copied}
+    return &RoutingTable{Routes: copied}
 }
 ```
 
 ### Step 3: Store It Atomically
 ```go
-var currentRoutes atomic.Value
+var currentRoutes atomic.Pointer[RoutingTable]
 
 func LoadInitialRoutes() {
     table := NewRoutingTable([]Route{
@@ -116,8 +116,8 @@ func LoadInitialRoutes() {
     currentRoutes.Store(table)
 }
 
-func GetRoutingTable() RoutingTable {
-    return currentRoutes.Load().(RoutingTable)
+func GetRoutingTable() *RoutingTable {
+    return currentRoutes.Load()
 }
 ```
 

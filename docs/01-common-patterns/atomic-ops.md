@@ -49,10 +49,10 @@ Low-level access to relaxed memory ordering in Go exists internally (e.g., in th
 Tracking request counts, dropped packets, or other lightweight stats:
 
 ```go
-var requests int64
+var requests atomic.Int64
 
 func handleRequest() {
-	atomic.AddInt64(&requests, 1)
+    requests.Add(1)
 }
 ```
 
@@ -63,19 +63,19 @@ This code allows multiple goroutines to safely increment a shared counter withou
 Simple boolean state shared across threads:
 
 ```go
-var shutdown int32
+var shutdown atomic.Int32
 
 func mainLoop() {
-	for {
-		if atomic.LoadInt32(&shutdown) == 1 {
-			break
-		}
-		// do work
-	}
+    for {
+        if shutdown.Load() == 1 {
+            break
+        }
+        // do work
+    }
 }
 
 func stop() {
-	atomic.StoreInt32(&shutdown, 1)
+    shutdown.Store(1)
 }
 ```
 
@@ -86,12 +86,12 @@ This pattern allows one goroutine to signal another to stop. `atomic.LoadInt32` 
 Replace `sync.Once` when you need more control:
 
 ```go
-var initialized int32
+var initialized atomic.Int32
 
 func maybeInit() {
-	if atomic.CompareAndSwapInt32(&initialized, 0, 1) {
-		// initialize resources
-	}
+    if initialized.CompareAndSwap(0, 1) {
+        // initialize resources
+    }
 }
 ```
 
