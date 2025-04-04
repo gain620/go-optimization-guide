@@ -1,11 +1,15 @@
-package example
+package memory
 
-import "testing"
+import (
+	"testing"
+)
 
 func BenchmarkWithoutPooling(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		globalSink = &Data{}
-		globalSink.Values[0] = 24
+		obj := &Data{}
+		obj.Values[0] = 24
+		//runtime.KeepAlive(obj)
+		globalSink = obj
 	}
 }
 
@@ -14,6 +18,7 @@ func BenchmarkWithPooling(b *testing.B) {
 		obj := dataPool.Get().(*Data)
 		obj.Values[0] = 25
 		dataPool.Put(obj)
+		//runtime.KeepAlive(obj)
 		globalSink = obj
 	}
 }
