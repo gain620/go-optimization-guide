@@ -15,7 +15,7 @@ func createData() *Data {
 }
 
 var dataPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &Data{}
 	},
 }
