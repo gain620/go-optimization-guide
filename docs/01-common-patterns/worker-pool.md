@@ -13,7 +13,7 @@ A worker pool maintains a fixed number of goroutines that pull tasks from a shar
 Here’s a minimal implementation of a worker pool:
 
 ```go
-func worker(id int, jobs <-chan int, results chan<- int) {
+func worker(id int, jobs <-chan int, results chan<- [32]byte) {
     for j := range jobs {
         results <- doWork(j)
     }
@@ -26,7 +26,7 @@ func doWork(n int) [32]byte {
 
 func main() {
     jobs := make(chan int, 100)
-    results := make(chan int, 100)
+    results := make(chan [32]byte, 100)
 
     for w := 1; w <= 5; w++ {
         go worker(w, jobs, results)
