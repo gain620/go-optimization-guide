@@ -10,7 +10,6 @@ import (
     "testing"
 )
 
-var sink string
 var lines = make([]string, 10000)
 
 func init() {
@@ -22,23 +21,23 @@ func init() {
 // --- 1. No I/O ---
 
 func BenchmarkUnbatchedProcessing(b *testing.B) {
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         for _, line := range lines {
-            sink = strings.ToUpper(line)
+            strings.ToUpper(line)
         }
     }
 }
 
 func BenchmarkBatchedProcessing(b *testing.B) {
     batchSize := 100
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         for i := 0; i < len(lines); i += batchSize {
             end := i + batchSize
             if end > len(lines) {
                 end = len(lines)
             }
             batch := strings.Join(lines[i:end], "|")
-            sink = strings.ToUpper(batch)
+            strings.ToUpper(batch)
         }
     }
 }
@@ -46,7 +45,7 @@ func BenchmarkBatchedProcessing(b *testing.B) {
 // --- 2. With I/O ---
 
 func BenchmarkUnbatchedIO(b *testing.B) {
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         f, err := os.CreateTemp("", "unbatched")
         if err != nil {
             b.Fatal(err)
@@ -61,7 +60,7 @@ func BenchmarkUnbatchedIO(b *testing.B) {
 
 func BenchmarkBatchedIO(b *testing.B) {
     batchSize := 100
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         f, err := os.CreateTemp("", "batched")
         if err != nil {
             b.Fatal(err)
@@ -87,23 +86,23 @@ func hash(s string) string {
 }
 
 func BenchmarkUnbatchedCrypto(b *testing.B) {
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         for _, line := range lines {
-            sink = hash(line)
+            hash(line)
         }
     }
 }
 
 func BenchmarkBatchedCrypto(b *testing.B) {
     batchSize := 100
-    for n := 0; n < b.N; n++ {
+    for b.Loop() {
         for i := 0; i < len(lines); i += batchSize {
             end := i + batchSize
             if end > len(lines) {
                 end = len(lines)
             }
             joined := strings.Join(lines[i:end], "")
-            sink = hash(joined)
+            hash(joined)
         }
     }
 }

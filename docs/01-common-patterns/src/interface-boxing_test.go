@@ -18,49 +18,45 @@ func (LargeJob) Work() {}
 // interface-end
 
 // bench-slice-start
-var sink []Worker
-
 func BenchmarkBoxedLargeSlice(b *testing.B) {
     jobs := make([]Worker, 0, 1000)
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         jobs = jobs[:0]
         for j := 0; j < 1000; j++ {
             var job LargeJob
             jobs = append(jobs, job)
         }
-        sink = jobs
     }
 }
 
 func BenchmarkPointerLargeSlice(b *testing.B) {
     jobs := make([]Worker, 0, 1000)
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         jobs := jobs[:0]
         for j := 0; j < 1000; j++ {
             job := &LargeJob{}
             jobs = append(jobs, job)
         }
-        sink = jobs
     }
 }
 // bench-slice-end
 
 // bench-call-start
-var sinkOne Worker
+var sink Worker
 
 func call(w Worker) {
-    sinkOne = w
+    sink = w
 }
 
 func BenchmarkCallWithValue(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         var j LargeJob
         call(j)
     }
 }
 
 func BenchmarkCallWithPointer(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         j := &LargeJob{}
         call(j)
     }

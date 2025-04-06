@@ -44,7 +44,7 @@ func writeBuffered(w io.Writer, count int) {
 }
 
 func BenchmarkWriteNotBuffered(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		f, _ := os.CreateTemp("", "nobuf")
 		writeNotBuffered(f, N)
 		f.Close()
@@ -53,7 +53,7 @@ func BenchmarkWriteNotBuffered(b *testing.B) {
 }
 
 func BenchmarkWriteBuffered(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		f, _ := os.CreateTemp("", "buf")
 		writeBuffered(f, N)
 		f.Close()
