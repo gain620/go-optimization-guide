@@ -19,25 +19,21 @@ type WellAligned struct {
 }
 // types-simple-end
 
-var result int64
-
 // simple-start
 func BenchmarkPoorlyAligned(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         var items = make([]PoorlyAligned, 10_000_000)
         for j := range items {
             items[j].count = int64(j)
-            result += items[j].count
         }
     }
 }
 
 func BenchmarkWellAligned(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         var items = make([]WellAligned, 10_000_000)
         for j := range items {
             items[j].count = int64(j)
-            result += items[j].count
         }
     }
 }
@@ -63,8 +59,7 @@ func BenchmarkFalseSharing(b *testing.B) {
     var c SharedCounterBad  // (1)
     var wg sync.WaitGroup
 
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         wg.Add(2)
         go func() {
             for i := 0; i < 1_000_000; i++ {
@@ -87,8 +82,7 @@ func BenchmarkNoFalseSharing(b *testing.B) {
     var c SharedCounterGood
     var wg sync.WaitGroup
 
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         wg.Add(2)
         go func() {
             for i := 0; i < 1_000_000; i++ {

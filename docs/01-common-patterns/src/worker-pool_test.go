@@ -21,7 +21,7 @@ func doWork(n int) [32]byte {
 }
 
 func BenchmarkUnboundedGoroutines(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		var wg sync.WaitGroup
 		wg.Add(numJobs)
 
@@ -43,7 +43,7 @@ func worker(jobs <-chan int, wg *sync.WaitGroup) {
 }
 
 func BenchmarkWorkerPool(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		var wg sync.WaitGroup
 		wg.Add(numJobs)
 

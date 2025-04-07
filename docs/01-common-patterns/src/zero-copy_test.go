@@ -10,22 +10,18 @@ import (
 )
 
 // bench-start
-var sink []byte
-
 func BenchmarkCopy(b *testing.B) {
     data := make([]byte, 64*1024)
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         buf := make([]byte, len(data))
         copy(buf, data)
-        sink = buf
     }
 }
 
 func BenchmarkSlice(b *testing.B) {
     data := make([]byte, 64*1024)
-    for i := 0; i < b.N; i++ {
-        s := data[:]
-        sink = s
+    for b.Loop() {
+        _ = data[:]
     }
 }
 // bench-end
@@ -39,13 +35,11 @@ func BenchmarkReadWithCopy(b *testing.B) {
     defer f.Close()
 
     buf := make([]byte, 4*1024*1024) // 4MB buffer
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         _, err := f.ReadAt(buf, 0)
         if err != nil && err != io.EOF {
             b.Fatal(err)
         }
-        sink = buf
     }
 }
 
@@ -57,13 +51,11 @@ func BenchmarkReadWithMmap(b *testing.B) {
     defer r.Close()
 
     buf := make([]byte, r.Len())
-    b.ResetTimer()
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         _, err := r.ReadAt(buf, 0)
         if err != nil && err != io.EOF {
             b.Fatal(err)
         }
-        sink = buf
     }
 }
 // bench-io-end
