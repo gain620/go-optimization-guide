@@ -16,13 +16,13 @@ func HeapAlloc() *Data {
 }
 
 func BenchmarkStackAlloc(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         _ = StackAlloc()
     }
 }
 
 func BenchmarkHeapAlloc(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         _ = HeapAlloc()
     }
 }
@@ -37,7 +37,7 @@ func HeapAllocEscape() {
 }
 
 func BenchmarkHeapAllocEscape(b *testing.B) {
-    for i := 0; i < b.N; i++ {
+    for b.Loop() {
         HeapAllocEscape()
     }
 }
