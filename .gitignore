@@ -85,3 +85,5 @@ tags
 #MkDocs
 
 /site/
+
+/.idea
